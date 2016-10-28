@@ -1,5 +1,54 @@
-<ion-view view-title="Search">
-  <ion-content>
-    <h1>Search</h1>
+<ion-view view-title="Search Product">
+  <ion-content style="background-image: url('img/bg.jpg')">
+  <div class="list list-inset">
+    <h4 class="border-top" style="margin-left: 4%; color: #000;"><i class="icon ion-navicon-round"></i> Search Product</h4>
+    <div class="row">
+      <div class="col-30" style="margin-left: 2%;">Enter Barcode</div>
+    </div>
+    <div class="row" style="margin-top: 2%;">
+      <div class="col-100" style="margin-left: 2%; width: 95%;"><input type="text" name="barcode" value="" ng-model="barcode" style="width: 100%; border: 1px solid #CCC; padding-left: 2%;" /></div>
+      
+    </div>
+    <div class="row" style="margin-top: 2%;">
+      <div class="col"></div>
+      <div class="col"><button class="button button-small button-royal" ng-click="searchProd(barcode)">&nbsp;&nbsp;&nbsp;Search&nbsp;&nbsp;&nbsp;</button> </div>
+      <div class="col"><button class="button button-small button-assertive" ng-click="scanBarcode();">&nbsp;&nbsp;&nbsp;Scan Barcode&nbsp;&nbsp;&nbsp;</button></div>
+      <div class="col"></div>
+    </div>
+  </div>
+
+
+  
+  <div class="list list-inset">
+    <h4 class="border-top" style="margin-left: 4%; color: #000;"><i class="icon ion-navicon-round"></i> Products List</h4>
+    <ion-list>
+      <ion-item ng-repeat="item in items | limitTo: 50"">
+          {{item.bar_code}} 
+          <p style="font-size: 11px;">{{item.item_name}}  <b>Sale Price: </b>{{item.sale_price}}</p>
+          <ion-option-button class="button-positive" ng-click="viewDetail(item.bar_code)">View Details</ion-option-button>
+      </ion-item>
+    </ion-list>
+  </div>
   </ion-content>
 </ion-view>
+
+
+<style type="text/css">
+  .list .item{
+
+      border: 1px solid #CCC !important;
+  }
+  .list .list-inset{
+      background: none !important;
+  }
+  .platform-android .bar .title{
+
+      text-align: center;
+      top: 10%;
+      left: 0 !important;
+  }
+  input[type="text"]{
+    color: #000;
+  }
+</style>
+<!-- <p>{{item.item_name}}</p> -->

@@ -1,56 +1,126 @@
-angular.module('starter.controllers', [])
+angular.module('retailapp.controllers', [])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  // Form data for the login modal
-  $scope.loginData = {};
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
+  
 })
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
+.controller('DashboardCtrl', function($scope, $stateParams, $state) {
+
+    $scope.gotoSearch = function(){
+
+        $state.go('app.search');
+    }
+
 })
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('LoginCtrl', function($scope, $stateParams, loginService, $ionicLoading, $state) {
+
+    $scope.loginUser = function(user, pass){
+
+        if(user === undefined && pass === undefined){
+
+            $ionicLoading.show({
+              template: 'Please fill details',
+              noBackdrop: false,
+              duration: 1000
+            });
+
+            return false;
+
+        }
+
+        $ionicLoading.show({
+          template: '<ion-spinner icon="android"></ion-spinner>',
+          noBackdrop: false
+        });
+        loginService.loginUser(user, pass).then(function(response){
+
+            if(response.data.code == 407){
+                $ionicLoading.hide();
+                $ionicLoading.show({
+                  template: response.data.message,
+                  noBackdrop: false,
+                  duration: 1000
+                });
+            }else{
+                $state.go('app.dashboard');
+                $ionicLoading.hide();
+            }
+        });
+
+        
+    }
+
+
+}).controller('SearchCtrl', function($scope, $stateParams, products, $ionicLoading, ionicMaterialInk, $cordovaBarcodeScanner, searchProd, localStorageService, $state) {
+
+    ionicMaterialInk.displayEffect();
+    $ionicLoading.show({
+        template: '<div class="loader"><svg class="circular"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/></svg></div>'
+    });
+    
+    $scope.scanBarcode = function(){
+
+        $cordovaBarcodeScanner.scan().then(function(barcodeData) {
+        
+          $scope.barcode = barcodeData.text;
+    
+        }, function(error) {
+          
+        });
+    }
+    
+    $scope.searchProd = function(barcode){
+
+        console.log(barcode);
+        $ionicLoading.show({
+            template: '<div class="loader"><svg class="circular"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/></svg></div>'
+        });
+        searchProd.getProdsDet(barcode).then(function(response){
+            $scope.items = response.data.prod_det;
+            localStorageService.set('items',response.data.prod_det);
+            $ionicLoading.hide();
+        });
+
+    }
+
+    $scope.viewDetail = function(barcode){
+
+        console.log(barcode);
+        $state.go('app.viewdetail',{'barcode':barcode});
+    }
+
+    products.getProds().then(function(result){
+
+        console.log(result);
+        localStorageService.set('items',result.data.items);
+        $scope.items = result.data.items;
+        $ionicLoading.hide();
+    });
+
+}).controller('DetailsCtrl', function($scope, $stateParams, products, $ionicLoading, ionicMaterialInk, $cordovaBarcodeScanner, localStorageService, $state) {
+
+    ionicMaterialInk.displayEffect();
+    
+    var itemList = localStorageService.get('items');
+    var singleItem = '';
+    angular.forEach(itemList, function(value, index){
+
+        if(value.bar_code == $state.params.barcode){
+            singleItem = value;
+            return false; 
+        }
+    });
+    $scope.barcode = singleItem.bar_code;
+    $scope.item_name = singleItem.item_name;
+    $scope.mrp = singleItem.mrp;
+    $scope.sale_price = singleItem.sale_price;
+    $scope.purchase_price = singleItem.purchase;
+
+    $scope.goBack = function(){
+
+        $state.go('app.search');
+    }
+    console.log(singleItem);
 });

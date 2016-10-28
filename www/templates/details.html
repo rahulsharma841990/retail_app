@@ -1,0 +1,45 @@
+<ion-view view-title="Product Details">
+  <ion-content style="background-image: url('img/bg.jpg')">
+
+  <div class="list list-inset">
+    <h4 class="border-top" style="margin-left: 4%; color: #000;"><i class="icon ion-navicon-round"></i> Products Detail</h4>
+    <ion-list>
+      <ion-item>
+          <b>Item Code:</b> {{barcode}}
+      </ion-item>
+      <ion-item>
+          <b>Item Name:</b> {{item_name}}
+      </ion-item>
+      <ion-item>
+          <b>Item MRP:</b> {{mrp}}
+      </ion-item>
+      <ion-item>
+          <b>Sale Price:</b> {{sale_price}}
+      </ion-item>
+      <ion-item>
+          <b>Purchase Price:</b> {{purchase_price}}
+      </ion-item>
+    </ion-list>
+  </div>
+  <button class="button button-block button-assertive" ng-click="goBack()">
+    Go Back
+  </button>
+  </ion-content>
+</ion-view>
+
+<style type="text/css">
+  .list .item{
+
+      border: 1px solid #CCC !important;
+  }
+  .list .list-inset{
+      background: none !important;
+  }
+  .platform-android .bar .title{
+
+      text-align: center;
+      top: 10%;
+      left: 0 !important;
+  }
+</style>
+<!-- <p>{{item.item_name}}</p> -->
